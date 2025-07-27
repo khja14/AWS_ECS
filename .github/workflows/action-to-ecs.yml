@@ -1,0 +1,26 @@
+name: action-to-ecs
+run-name: ${{ github.actor }} is learning GitHub Actions
+on: [push]
+# ECSにpingを送るサンプル
+jobs:
+  # 1. Batsのバージョンを確認するジョブ
+  check-bats-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g bats
+      - run: bats -v
+
+  # 2. ECSのヘルスチェックを行うジョブ
+  ecs-health-check:
+    runs-on: ubuntu-latest
+    needs: ecs-run-task
+    steps:
+      - name: Check ECS health
+        run: |
+          # ECSのヘルスチェックエンドポイントにアクセス
+          curl -f http://54.95.75.155/ || exit 1
+          echo "ECS is healthy"
