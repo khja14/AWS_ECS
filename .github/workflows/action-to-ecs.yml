@@ -6,7 +6,7 @@ env:
 # ECSにpingを送るサンプル
 jobs:
   # 1. Batsのバージョンを確認するジョブ
-  check-bats-version:
+  sample-first-job:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,20 +17,20 @@ jobs:
       - run: bats -v
 
   # 2. ECSのヘルスチェックを行うジョブ
-  ecs-health-check:
+  ecs-refresh:
     runs-on: ubuntu-latest
-    needs: check-bats-version
+    needs: sample-first-job
     steps:
       - name: Check ECS health
         run: |
           # ECSのヘルスチェックエンドポイントにアクセス
           curl -f http://$ECS_HOST/refresh || exit 1
-          echo "ECS is healthy"
+          echo "Updated ECS successfully"
 
   # 3. ECSのヘルスチェックを行うジョブ（別のサンプル）
-  ecs-health-check-2:
+  ecs-health-check:
     runs-on: ubuntu-latest
-    needs: check-bats-version
+    needs: ecs-refresh
     steps:
       - name: Check ECS health
         run: |
