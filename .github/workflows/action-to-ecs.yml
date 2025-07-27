@@ -2,7 +2,7 @@ name: action-to-ecs
 run-name: ${{ github.actor }} is learning GitHub Actions
 on: [push]
 env:
-  ECS_HOST: 18.179.35.116
+  ECS_HOST: 18.181.146.129
 # ECSにpingを送るサンプル
 jobs:
   # 1. Batsのバージョンを確認するジョブ
