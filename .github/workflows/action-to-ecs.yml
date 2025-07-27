@@ -17,7 +17,7 @@ jobs:
   # 2. ECSのヘルスチェックを行うジョブ
   ecs-health-check:
     runs-on: ubuntu-latest
-    needs: ecs-run-task
+    needs: check-bats-version
     steps:
       - name: Check ECS health
         run: |
