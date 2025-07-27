@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: sample-first-job
     steps:
-      - name: Check ECS health
+      - name: Check List
         run: |
           # ECSのヘルスチェックエンドポイントにアクセス
           curl -f http://$ECS_HOST/list || exit 1
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ecs-check-list-before
     steps:
-      - name: Check ECS health
+      - name: Refresh ECS from S3
         run: |
           # ECSのヘルスチェックエンドポイントにアクセス
           curl -f http://$ECS_HOST/refresh || exit 1
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ecs-refresh
     steps:
-      - name: Check ECS health
+      - name: Check List
         run: |
           # ECSのヘルスチェックエンドポイントにアクセス
           curl -f http://$ECS_HOST/list || exit 1
