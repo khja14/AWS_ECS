@@ -40,7 +40,9 @@ jobs:
         run: pip install yq
 
       - name: Convert XML to JSON using xq
-        run: xq . < $WORKSPACE/input.xml > $WORKSPACE/output.json
+        # run: xq . < $WORKSPACE/input.xml > $WORKSPACE/output.json
+        run: xq . < $WORKSPACE/input.xml | jq 'walk(if type == "object" and has("#text") then .["#text"] else . end)' > $WORKSPACE/output.json
+
 
       - name: Check Result
         run: cat $WORKSPACE/output.json
