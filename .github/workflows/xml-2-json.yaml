@@ -68,5 +68,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: ls cmd
+        run: ls
+
       - name: Show Converted_Xml.json
         run: cat $WORKSPACE/converted_json_from_xml.json
