@@ -42,9 +42,10 @@ jobs:
       - name: Check jq version
         run: jq --version
 
-      # 1. xq . < input.xml: XML → JSON に変換
-      # 2. jq 'walk(...)': 全体のJSONツリーを探索して、
-      # 3. "#text" を含んでいる object はそれだけを残す
+      # 1. xq . < input.xml: XML を JSON に変換
+      # 2. jq 'walk(...)': JSON ツリー全体を再帰的に探索し、
+      # 3. 各 object から属性キー（@で始まるもの）を削除し、
+      # 4. "#text" キーを持つ object はその値だけを抽出して置き換える処理
       - name: Convert XML to JSON using xq
         run: |
           xq . < $WORKSPACE/input.xml | jq 'walk(
@@ -53,9 +54,19 @@ jobs:
               | if has("#text") then .["#text"] else . end
             else .
             end
-          )' > $WORKSPACE/output.json
-        # run: xq . < $WORKSPACE/input.xml | jq 'walk(if type == "object" and has("#text") then .["#text"] else . end)' > $WORKSPACE/output.json
-
+          )' > $WORKSPACE/converted_json_from_xml.json
 
       - name: Show Result
-        run: cat $WORKSPACE/output.json
+        run: cat $WORKSPACE/converted_json_from_xml.json
+
+  # 3. Insert JSON into Origen Json
+  insert-json:
+    runs-on: ubuntu-latest
+    needs: convert-xml-2-json
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show Converted_Xml.json
+        run: cat $WORKSPACE/converted_json_from_xml.json
