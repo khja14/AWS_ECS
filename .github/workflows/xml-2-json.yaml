@@ -8,7 +8,9 @@ env:
   # $WORKSPACE
   WORKSPACE: "XML2JSON"
   INPUT_XML: "XML2JSON/input.xml"
+  BASE_JSON: "XML2JSON/base.json"
   CONVERTED_JSON: "XML2JSON/converted.json"
+  OUTPUT_JSON: "XML2JSON/output.json"
   
 jobs:
   # 1. Checkout code and set up environment
@@ -60,6 +62,7 @@ jobs:
       - name: Show Result
         run: cat $CONVERTED_JSON
 
+      # 次のジョブで使用するために、変換された JSON を保存
       - name: Save Converted JSON
         uses: actions/upload-artifact@v4
         with:
@@ -75,15 +78,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: ls cmd
-        run: ls
-
-
       - name: Get Converted JSON
         uses: actions/download-artifact@v4
         with:
           name: my-converted-json
           path: ${{ env.WORKSPACE }}
 
-      - name: Show Converted_Xml.json
-        run: cat $CONVERTED_JSON
+      - name: Merge converted JSON into environmentTests
+        run: |
+          jq --slurpfile newdata $CONVERTED_JSON '
+            .soatestOptions.environmentConfig.environmentTests[0] = $newdata[0]
+          ' $BASE_JSON > $OUTPUT_JSON
+
+      - name: Show Output JSON
+        run: cat $OUTPUT_JSON
