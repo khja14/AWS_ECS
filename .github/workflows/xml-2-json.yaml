@@ -4,6 +4,11 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  # $WORKSPACE
+  WORKSPACE: "XML2JSON/workspace"
+
+  
 jobs:
   # 1. Checkout code and set up environment
   sample-first-job:
@@ -32,10 +37,10 @@ jobs:
         run: pip install yq
 
       - name: Convert XML to JSON using xq
-        run: xq . < input.xml > output.json
+        run: xq . < $WORKSPACE/input.xml > $WORKSPACE/output.json
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: converted-json
-          path: output.json
+          path: $WORKSPACE/output.json

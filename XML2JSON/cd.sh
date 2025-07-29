@@ -1,1 +1,0 @@
-cd /c/Users/ftymd/Documents/AWS_ECS/XML2JSON/workspace
