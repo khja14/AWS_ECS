@@ -11,8 +11,6 @@ env:
   INPUT_XML: "XML2JSON/input.xml"
   CONVERTED_JSON: "XML2JSON/converted.json"
   BASE_JSON: "XML2JSON/base.json"
-  # Base JSON のデータ挿入先のXPATH
-  TARGET_BASE_JASON_XPATH: ".soatestOptions.environmentConfig.environmentTests[0]"
   # 出力用 JSON
   OUTPUT_JSON: "XML2JSON/output.json"
   
@@ -92,10 +90,12 @@ jobs:
       # 1. jq --slurpfile newdata $CONVERTED_JSON: 変換済みJSONを配列として読み込む
       # 2. '.soatestOptions.environmentConfig.environmentTests[0] = $newdata[0]':
       #    既存JSONの environmentTests 配列の最初の要素を変換済みJSONに置き換える
+      #    ※この左辺は変数化できない
+      # 3.  > $OUTPUT_JSON : 出力用のJSONファイルに保存
       - name: Merge converted JSON into environmentTests
         run: |
           jq --slurpfile newdata $CONVERTED_JSON '
-            $TARGET_BASE_JASON_XPATH = $newdata[0]
+            .soatestOptions.environmentConfig.environmentTests[0] = $newdata[0]
           ' $BASE_JSON > $OUTPUT_JSON
 
       - name: Show Output JSON
