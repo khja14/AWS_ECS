@@ -48,6 +48,7 @@ jobs:
       - name: Check jq version
         run: jq --version
 
+      # TODO: カラム名が大文字になってしまうので、その修正
       # 1. xq . < input.xml: XML を JSON に変換
       # 2. jq 'walk(...)': JSON ツリー全体を再帰的に探索し、
       # 3. 各 object から属性キー（@で始まるもの）を削除し、
