@@ -6,8 +6,9 @@ on:
 
 env:
   # $WORKSPACE
-  WORKSPACE: "XML2JSON/workspace"
-
+  WORKSPACE: "XML2JSON"
+  INPUT_XML: "XML2JSON/input.xml"
+  CONVERTED_JSON: "XML2JSON/converted.json"
   
 jobs:
   # 1. Checkout code and set up environment
@@ -48,16 +49,22 @@ jobs:
       # 4. "#text" キーを持つ object はその値だけを抽出して置き換える処理
       - name: Convert XML to JSON using xq
         run: |
-          xq . < $WORKSPACE/input.xml | jq 'walk(
+          xq . < $INPUT_XML | jq 'walk(
             if type == "object" then
               with_entries(select(.key | startswith("@") | not)) 
               | if has("#text") then .["#text"] else . end
             else .
             end
-          )' > $WORKSPACE/converted_json_from_xml.json
+          )' > $CONVERTED_JSON
 
       - name: Show Result
-        run: cat $WORKSPACE/converted_json_from_xml.json
+        run: cat $CONVERTED_JSON
+
+      - name: Save Converted JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-converted-json
+          path: $CONVERTED_JSON
 
   # 3. Insert JSON into Origen Json
   insert-json:
@@ -71,5 +78,12 @@ jobs:
       - name: ls cmd
         run: ls
 
+
+      - name: Get Converted JSON
+        uses: actions/download-artifact@v4
+        with:
+          name: my-converted-json
+          path: ./$WORKSPACE
+
       - name: Show Converted_Xml.json
-        run: cat $WORKSPACE/converted_json_from_xml.json
+        run: cat $CONVERTED_JSON
