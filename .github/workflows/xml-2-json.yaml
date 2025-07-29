@@ -33,14 +33,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Output Env
+        run: echo $WORKSPACE
+
       - name: Install xq (yq)
         run: pip install yq
 
       - name: Convert XML to JSON using xq
         run: xq . < $WORKSPACE/input.xml > $WORKSPACE/output.json
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: converted-json
-          path: $WORKSPACE/output.json
+      - name: Check Result
+        run: cat $WORKSPACE/output.json
