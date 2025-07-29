@@ -39,10 +39,23 @@ jobs:
       - name: Install xq (yq)
         run: pip install yq
 
+      # 1. xq . < input.xml: XML → JSON に変換
+      # 2. jq 'walk(...)': 全体のJSONツリーを探索して、
+      # 3. "#text" を含んでいる object はそれだけを残す
       - name: Convert XML to JSON using xq
-        # run: xq . < $WORKSPACE/input.xml > $WORKSPACE/output.json
-        run: xq . < $WORKSPACE/input.xml | jq 'walk(if type == "object" and has("#text") then .["#text"] else . end)' > $WORKSPACE/output.json
+        run: |
+          xq . < $WORKSPACE/input.xml | jq '
+            walk(
+              if type == "object" then
+                with_entries(
+                  select(.key | startswith("@") | not)
+                ) |
+                if has("#text") then .["#text"] else . end
+              else .
+            )
+          ' > $WORKSPACE/output.json
+        # run: xq . < $WORKSPACE/input.xml | jq 'walk(if type == "object" and has("#text") then .["#text"] else . end)' > $WORKSPACE/output.json
 
 
-      - name: Check Result
+      - name: Show Result
         run: cat $WORKSPACE/output.json
