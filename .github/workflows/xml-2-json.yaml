@@ -1,0 +1,41 @@
+name: Convert XML to JSON with xq
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  # 1. Checkout code and set up environment
+  sample-first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: ls cmd
+        run: ls
+      - name: pwd cmd
+        run: pwd
+      
+  # 2. Convert XML to JSON
+  convert-xml-2-json:
+    runs-on: ubuntu-latest
+    needs: sample-first-job
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install xq (yq)
+        run: pip install yq
+
+      - name: Convert XML to JSON using xq
+        run: xq . < input.xml > output.json
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: converted-json
+          path: output.json

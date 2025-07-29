@@ -1,0 +1,26 @@
+{
+    "general" : {
+        "config" : "builtin://Run Server Tests",
+        "nobuild" : true,
+        "parallel" : true,
+        "showdetails" : true
+    },
+    "scopeOptions" : {
+        "workspace" : {
+            "resources" : [
+                "/TestAssets/Sample.tst"
+            ]
+        }
+    },
+    "soatestOptions" : {
+        "dataSource" : {
+            "dataSourceRow" : "1-1"
+        },
+        "environmentConfig" : {
+            "environmentTests" : [
+                {
+                }
+            ]
+        }
+    }
+}

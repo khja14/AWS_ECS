@@ -1,0 +1,51 @@
+{
+    "general" : {
+        "config" : "builtin://Run Server Tests",
+        "nobuild" : true,
+        "parallel" : true,
+        "showdetails" : true
+    },
+    "scopeOptions" : {
+        "workspace" : {
+            "resources" : [
+                "/TestAssets/Sample.tst"
+            ]
+        }
+    },
+    "soatestOptions" : {
+        "dataSource" : {
+            "dataSourceRow" : "1-1"
+        },
+        "environmentConfig" : {
+            "environmentTests" : [
+                {
+                    "environment" : {
+                        "variables" : [
+                            {
+                                "name" : "ConnectionURL",
+                                "value" : "localhost:7080"
+                            },
+                            {
+                                "name" : "ConnectionDIr",
+                                "value" : "SampleDir"
+                            },
+                            {
+                                "name" : "AssetsDir",
+                                "value" : "./TestAssets"
+                            },
+                            {
+                                "name" : "LogOutputDir",
+                                "value" : "./logs"
+                            },
+                            {
+                                "name" : "DBConnectionInformation",
+                                "value" : "DBConnection.properties"
+                            }
+                        ]
+                    },
+                    "workspacePath": "/TestAssets/Sample.tst"
+                }
+            ]
+        }
+    }
+}
