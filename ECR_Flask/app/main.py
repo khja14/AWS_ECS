@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 BUCKET_NAME = 'temp-2025-07-27'
 PREFIX = 'my-folder/'  # フォルダ風のS3キー
-LOCAL_DIR = './s3/'    # ダウンロード先ローカルディレクトリ
+LOCAL_DIR = '/app/shared/s3/'    # ダウンロード先ローカルディレクトリ
 
 HTML = """
     リンク一覧
