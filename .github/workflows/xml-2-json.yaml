@@ -1,8 +1,8 @@
 name: Convert XML to JSON with xq
 
-on:
-  push:
-  workflow_dispatch:
+# on:
+#   push:
+#   workflow_dispatch:
 
 env:
   # 利用方法 : $WORKSPACE
