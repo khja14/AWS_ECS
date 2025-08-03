@@ -58,7 +58,7 @@
       }
     },
     {
-      "name": "sidecar-s3-ecs-by-shell",
+      "name": "sidecar-s3-to-ecs-by-shell",
       "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/sidecar/s3_to_ecs/shell:latest",
       "mountPoints": [
         {
