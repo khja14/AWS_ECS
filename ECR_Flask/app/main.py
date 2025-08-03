@@ -4,9 +4,13 @@ import boto3
 
 app = Flask(__name__)
 
-BUCKET_NAME = 'temp-2025-07-27'
+BUCKET_NAME = 'temp-bucket-24513423346'
 PREFIX = 'my-folder/'  # フォルダ風のS3キー
-LOCAL_DIR = '/app/shared/s3/'    # ダウンロード先ローカルディレクトリ
+LOCAL_WORKSPACE = '/app/shared/path/to/parasoft/workspace/'    # ダウンロード先ローカルディレクトリ
+SOA_REPORTS="SoaReports"
+VIRT_LOGS="VirtLogs"
+LOCAL_SOA_DIR = os.path.join(LOCAL_WORKSPACE, SOA_REPORTS)  # ローカルフォルダのパス
+LOCAL_VIRT_DIR = os.path.join(LOCAL_WORKSPACE, VIRT_LOGS)  # ローカルフォルダのパス
 
 HTML = """
     リンク一覧
@@ -26,7 +30,7 @@ def refresh_from_s3():
     s3 = boto3.client('s3')
 
     # フォルダがなければ作成
-    os.makedirs(LOCAL_DIR, exist_ok=True)
+    os.makedirs(LOCAL_SOA_DIR, exist_ok=True)
 
     response = None
     try:
@@ -40,7 +44,7 @@ def refresh_from_s3():
             for obj in response['Contents']:
                 key = obj['Key']
                 filename = key.split('/')[-1]  # ファイル名だけを抽出
-                local_path = os.path.join(LOCAL_DIR, filename)
+                local_path = os.path.join(LOCAL_SOA_DIR, filename)
                 
                 # ディレクトリはスキップ（キーがフォルダで終わる場合）
                 if key.endswith('/'):
@@ -61,10 +65,10 @@ def show_folder_list():
     try:
         # ファイルパスをすべて再帰的に収集
         file_list = []
-        for root, dirs, files in os.walk(LOCAL_DIR):
+        for root, dirs, files in os.walk(LOCAL_WORKSPACE):
             for file in files:
                 # 相対パスに変換
-                rel_dir = os.path.relpath(root, LOCAL_DIR)
+                rel_dir = os.path.relpath(root, LOCAL_WORKSPACE)
                 rel_file = os.path.join(rel_dir, file) if rel_dir != '.' else file
                 file_list.append(rel_file)
 
@@ -74,13 +78,13 @@ def show_folder_list():
         return "<br>".join(file_list)
 
     except FileNotFoundError:
-        return f"フォルダが存在しません: {LOCAL_DIR}<br><a href='/'>戻る</a>"
+        return f"フォルダが存在しません: {LOCAL_WORKSPACE}<br><a href='/'>戻る</a>"
     except Exception as e:
         return f"エラーが発生しました: {str(e)}<br><a href='/'>戻る</a>"
 
 
 @app.route("/upload", methods=["GET", "POST"])
-def upload_to_s3():
+def upload_file():
     if request.method == "GET":
         return '''
             <form method="POST" enctype="multipart/form-data">
@@ -100,9 +104,14 @@ def upload_to_s3():
         if not file:
             return "ファイルが選択されていません <br> <a href='/upload'>戻る</a>"
         
-        os.makedirs(LOCAL_DIR, exist_ok=True)  # フォルダがなければ作成
+        # SOAレポートのローカルディレクトリに保存
+        os.makedirs(LOCAL_SOA_DIR, exist_ok=True)  # フォルダがなければ作成
+        file_path = os.path.join(LOCAL_SOA_DIR, file.filename)
+        file.save(file_path)
 
-        file_path = os.path.join(LOCAL_DIR, file.filename)
+        # VIRTレポートのローカルディレクトリに保存
+        os.makedirs(LOCAL_VIRT_DIR, exist_ok=True)  # フォルダがなければ作成
+        file_path = os.path.join(LOCAL_VIRT_DIR, file.filename)
         file.save(file_path)
 
         return f"アップロードされたファイル: {file.filename}<br> <a href='/'>戻る</a><br>"

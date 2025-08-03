@@ -1,5 +1,5 @@
 {
-  "family": "my-task-family-2025-07-30",
+  "family": "my-task-family-2025-08-03",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
@@ -14,7 +14,7 @@
   "containerDefinitions": [
     {
       "name": "main-app",
-      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/flask:latest",
+      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/main/flask:latest",
       "portMappings": [
         {
           "containerPort": 80,
@@ -28,18 +28,72 @@
           "containerPath": "/app/shared"
         }
       ],
-      "essential": true
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-task-family-2025-08-03",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "main-app"
+        }
+      }
     },
     {
-      "name": "sidecar",
-      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/sidecar_2025_07_30:latest",
+      "name": "sidecar-ecs-to-s3-by-shell",
+      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/sidecar/ecs_to_s3/shell:latest",
       "mountPoints": [
         {
           "sourceVolume": "shared-data",
           "containerPath": "/app/shared"
         }
       ],
-      "essential": false
+      "essential": false,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-task-family-2025-08-03",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs-to-s3"
+        }
+      }
+    },
+    {
+      "name": "sidecar-s3-ecs-by-shell",
+      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/sidecar/s3_to_ecs/shell:latest",
+      "mountPoints": [
+        {
+          "sourceVolume": "shared-data",
+          "containerPath": "/app/shared"
+        }
+      ],
+      "essential": false,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-task-family-2025-08-03",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "s3-to-ecs-shell"
+        }
+      }
+    },
+    {
+      "name": "sidecar-s3-ecs-by-exec",
+      "image": "773245100111.dkr.ecr.ap-northeast-1.amazonaws.com/soa/sidecar/s3_to_ecs/exec:latest",
+      "mountPoints": [
+        {
+          "sourceVolume": "shared-data",
+          "containerPath": "/app/shared"
+        }
+      ],
+      "essential": false,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-task-family-2025-08-03",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "s3-to-ecs-exec"
+        }
+      }
     }
   ]
 }
